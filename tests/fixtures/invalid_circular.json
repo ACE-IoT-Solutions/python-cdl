@@ -1,0 +1,27 @@
+{
+  "name": "InvalidCircular",
+  "description": "Invalid block with circular dependency",
+  "block_type": "composite",
+  "inputs": [
+    {
+      "name": "u",
+      "type": "Real"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "y",
+      "type": "Real"
+    }
+  ],
+  "equations": [
+    {
+      "lhs": "y",
+      "rhs": "x + u"
+    },
+    {
+      "lhs": "x",
+      "rhs": "y * 2"
+    }
+  ]
+}

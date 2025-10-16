@@ -1,0 +1,30 @@
+{
+  "name": "LogicalAnd",
+  "description": "Boolean AND operation",
+  "block_type": "elementary",
+  "inputs": [
+    {
+      "name": "u1",
+      "type": "Boolean",
+      "description": "First boolean input"
+    },
+    {
+      "name": "u2",
+      "type": "Boolean",
+      "description": "Second boolean input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "y",
+      "type": "Boolean",
+      "description": "Boolean output"
+    }
+  ],
+  "equations": [
+    {
+      "lhs": "y",
+      "rhs": "u1 and u2"
+    }
+  ]
+}

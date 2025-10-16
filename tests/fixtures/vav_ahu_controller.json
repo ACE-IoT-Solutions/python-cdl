@@ -1,0 +1,267 @@
+{
+  "name": "VAVAHUController",
+  "block_type": "composite",
+  "category": "composite",
+  "description": "Air Handling Unit controller for VAV system following ASHRAE Guideline 36-2018. Manages supply fan, economizer, and heating/cooling coils.",
+  "inputs": [
+    {
+      "name": "TOut",
+      "type": "Real",
+      "description": "Outdoor air temperature",
+      "unit": "K"
+    },
+    {
+      "name": "TMix",
+      "type": "Real",
+      "description": "Mixed air temperature",
+      "unit": "K"
+    },
+    {
+      "name": "TSup",
+      "type": "Real",
+      "description": "Supply air temperature",
+      "unit": "K"
+    },
+    {
+      "name": "TSupSet",
+      "type": "Real",
+      "description": "Supply air temperature setpoint",
+      "unit": "K"
+    },
+    {
+      "name": "dpDuc",
+      "type": "Real",
+      "description": "Duct static pressure",
+      "unit": "Pa"
+    },
+    {
+      "name": "dpDucSet",
+      "type": "Real",
+      "description": "Duct static pressure setpoint",
+      "unit": "Pa"
+    },
+    {
+      "name": "uOcc",
+      "type": "Boolean",
+      "description": "Occupancy status"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "yFan",
+      "type": "Real",
+      "description": "Supply fan speed signal (0-1)",
+      "unit": "1"
+    },
+    {
+      "name": "yOutDam",
+      "type": "Real",
+      "description": "Outdoor air damper position (0-1)",
+      "unit": "1"
+    },
+    {
+      "name": "yRetDam",
+      "type": "Real",
+      "description": "Return air damper position (0-1)",
+      "unit": "1"
+    },
+    {
+      "name": "yCooCoil",
+      "type": "Real",
+      "description": "Cooling coil valve position (0-1)",
+      "unit": "1"
+    },
+    {
+      "name": "yHeaCoil",
+      "type": "Real",
+      "description": "Heating coil valve position (0-1)",
+      "unit": "1"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "kFan",
+      "type": "Real",
+      "value": 0.5,
+      "description": "Gain for fan speed PI controller",
+      "unit": "1/Pa"
+    },
+    {
+      "name": "TiFan",
+      "type": "Real",
+      "value": 60,
+      "description": "Integration time for fan speed controller",
+      "unit": "s"
+    },
+    {
+      "name": "kCoo",
+      "type": "Real",
+      "value": 0.1,
+      "description": "Gain for cooling coil PI controller",
+      "unit": "1/K"
+    },
+    {
+      "name": "TiCoo",
+      "type": "Real",
+      "value": 300,
+      "description": "Integration time for cooling controller",
+      "unit": "s"
+    },
+    {
+      "name": "kHea",
+      "type": "Real",
+      "value": 0.1,
+      "description": "Gain for heating coil PI controller",
+      "unit": "1/K"
+    },
+    {
+      "name": "TiHea",
+      "type": "Real",
+      "value": 300,
+      "description": "Integration time for heating controller",
+      "unit": "s"
+    },
+    {
+      "name": "TOutCut",
+      "type": "Real",
+      "value": 289.15,
+      "description": "Economizer outdoor air temperature cutoff",
+      "unit": "K"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "fanPID",
+      "block_type": "CDL.Continuous.LimPID",
+      "category": "elementary",
+      "description": "PI controller for supply fan speed based on duct static pressure",
+      "inputs": [
+        {"name": "u_s", "type": "Real"},
+        {"name": "u_m", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "parameters": [
+        {"name": "k", "type": "Real", "value": 0.5},
+        {"name": "Ti", "type": "Real", "value": 60},
+        {"name": "yMax", "type": "Real", "value": 1.0},
+        {"name": "yMin", "type": "Real", "value": 0.2}
+      ],
+      "equations": []
+    },
+    {
+      "name": "coolingPID",
+      "block_type": "CDL.Continuous.LimPID",
+      "category": "elementary",
+      "description": "PI controller for cooling coil valve",
+      "inputs": [
+        {"name": "u_s", "type": "Real"},
+        {"name": "u_m", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "parameters": [
+        {"name": "k", "type": "Real", "value": 0.1},
+        {"name": "Ti", "type": "Real", "value": 300},
+        {"name": "yMax", "type": "Real", "value": 1.0},
+        {"name": "yMin", "type": "Real", "value": 0.0}
+      ],
+      "equations": []
+    },
+    {
+      "name": "heatingPID",
+      "block_type": "CDL.Continuous.LimPID",
+      "category": "elementary",
+      "description": "PI controller for heating coil valve",
+      "inputs": [
+        {"name": "u_s", "type": "Real"},
+        {"name": "u_m", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "parameters": [
+        {"name": "k", "type": "Real", "value": 0.1},
+        {"name": "Ti", "type": "Real", "value": 300},
+        {"name": "yMax", "type": "Real", "value": 1.0},
+        {"name": "yMin", "type": "Real", "value": 0.0},
+        {"name": "reverseActing", "type": "Boolean", "value": false}
+      ],
+      "equations": []
+    },
+    {
+      "name": "economizerLogic",
+      "block_type": "CDL.Logical.Switch",
+      "category": "elementary",
+      "description": "Economizer enable/disable logic based on outdoor temperature",
+      "inputs": [
+        {"name": "u2", "type": "Boolean"},
+        {"name": "u1", "type": "Real"},
+        {"name": "u3", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "equations": []
+    }
+  ],
+  "connections": [
+    {
+      "from_block": "dpDucSet",
+      "from_output": "",
+      "to_block": "fanPID",
+      "to_input": "u_s"
+    },
+    {
+      "from_block": "dpDuc",
+      "from_output": "",
+      "to_block": "fanPID",
+      "to_input": "u_m"
+    },
+    {
+      "from_block": "fanPID",
+      "from_output": "y",
+      "to_block": "yFan",
+      "to_input": ""
+    },
+    {
+      "from_block": "TSupSet",
+      "from_output": "",
+      "to_block": "coolingPID",
+      "to_input": "u_s"
+    },
+    {
+      "from_block": "TSup",
+      "from_output": "",
+      "to_block": "coolingPID",
+      "to_input": "u_m"
+    },
+    {
+      "from_block": "coolingPID",
+      "from_output": "y",
+      "to_block": "yCooCoil",
+      "to_input": ""
+    },
+    {
+      "from_block": "TSupSet",
+      "from_output": "",
+      "to_block": "heatingPID",
+      "to_input": "u_s"
+    },
+    {
+      "from_block": "TSup",
+      "from_output": "",
+      "to_block": "heatingPID",
+      "to_input": "u_m"
+    },
+    {
+      "from_block": "heatingPID",
+      "from_output": "y",
+      "to_block": "yHeaCoil",
+      "to_input": ""
+    }
+  ],
+  "equations": []
+}

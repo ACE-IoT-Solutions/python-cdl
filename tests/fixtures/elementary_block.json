@@ -1,0 +1,27 @@
+{
+  "name": "Gain",
+  "description": "Elementary gain block",
+  "block_type": "elementary",
+  "parameters": [
+    {
+      "name": "k",
+      "type": "Real",
+      "description": "Gain value",
+      "value": 1.0
+    }
+  ],
+  "inputs": [
+    {
+      "name": "u",
+      "type": "Real",
+      "description": "Input signal"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "y",
+      "type": "Real",
+      "description": "Output signal"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+venv/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# Development tools
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude Code / AI tools
+.claude-flow/
+.hive-mind/
+.swarm/
+CLAUDE.md
+TEST_FIXES_SUMMARY.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Ruff
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Logs
+*.log

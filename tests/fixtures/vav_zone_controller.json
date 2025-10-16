@@ -1,0 +1,198 @@
+{
+  "name": "VAVZoneController",
+  "block_type": "composite",
+  "category": "composite",
+  "description": "VAV terminal box controller with reheat following ASHRAE Guideline 36-2018. Controls airflow based on zone temperature and provides reheat when needed.",
+  "inputs": [
+    {
+      "name": "TZon",
+      "type": "Real",
+      "description": "Measured zone temperature",
+      "unit": "K"
+    },
+    {
+      "name": "TZonSet",
+      "type": "Real",
+      "description": "Zone temperature setpoint",
+      "unit": "K"
+    },
+    {
+      "name": "TSup",
+      "type": "Real",
+      "description": "Supply air temperature from AHU",
+      "unit": "K"
+    },
+    {
+      "name": "VDis_flow_min",
+      "type": "Real",
+      "description": "Minimum airflow setpoint",
+      "unit": "m3/s"
+    },
+    {
+      "name": "VDis_flow_max",
+      "type": "Real",
+      "description": "Maximum airflow setpoint",
+      "unit": "m3/s"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "yDam",
+      "type": "Real",
+      "description": "Damper position signal (0-1)",
+      "unit": "1"
+    },
+    {
+      "name": "yVal",
+      "type": "Real",
+      "description": "Reheat valve position signal (0-1)",
+      "unit": "1"
+    },
+    {
+      "name": "VDis_flow",
+      "type": "Real",
+      "description": "Discharge airflow setpoint",
+      "unit": "m3/s"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "kCoo",
+      "type": "Real",
+      "value": 0.1,
+      "description": "Gain for cooling PI controller",
+      "unit": "1/K"
+    },
+    {
+      "name": "TiCoo",
+      "type": "Real",
+      "value": 900,
+      "description": "Integration time for cooling PI controller",
+      "unit": "s"
+    },
+    {
+      "name": "kHea",
+      "type": "Real",
+      "value": 0.5,
+      "description": "Gain for heating PI controller",
+      "unit": "1/K"
+    },
+    {
+      "name": "TiHea",
+      "type": "Real",
+      "value": 900,
+      "description": "Integration time for heating PI controller",
+      "unit": "s"
+    },
+    {
+      "name": "TDea",
+      "type": "Real",
+      "value": 0.5,
+      "description": "Deadband for switching between cooling and heating",
+      "unit": "K"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "coolingPID",
+      "block_type": "CDL.Continuous.LimPID",
+      "category": "elementary",
+      "description": "PI controller for cooling mode (modulates airflow)",
+      "inputs": [
+        {"name": "u_s", "type": "Real"},
+        {"name": "u_m", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "parameters": [
+        {"name": "k", "type": "Real", "value": 0.1},
+        {"name": "Ti", "type": "Real", "value": 900},
+        {"name": "yMax", "type": "Real", "value": 1.0},
+        {"name": "yMin", "type": "Real", "value": 0.0}
+      ],
+      "equations": []
+    },
+    {
+      "name": "heatingPID",
+      "block_type": "CDL.Continuous.LimPID",
+      "category": "elementary",
+      "description": "PI controller for heating mode (modulates reheat valve)",
+      "inputs": [
+        {"name": "u_s", "type": "Real"},
+        {"name": "u_m", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "parameters": [
+        {"name": "k", "type": "Real", "value": 0.5},
+        {"name": "Ti", "type": "Real", "value": 900},
+        {"name": "yMax", "type": "Real", "value": 1.0},
+        {"name": "yMin", "type": "Real", "value": 0.0},
+        {"name": "reverseActing", "type": "Boolean", "value": false}
+      ],
+      "equations": []
+    },
+    {
+      "name": "airflowCalculator",
+      "block_type": "CDL.Continuous.Line",
+      "category": "elementary",
+      "description": "Maps cooling signal to airflow setpoint",
+      "inputs": [
+        {"name": "u", "type": "Real"},
+        {"name": "x1", "type": "Real"},
+        {"name": "x2", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "equations": []
+    }
+  ],
+  "connections": [
+    {
+      "from_block": "TZonSet",
+      "from_output": "",
+      "to_block": "coolingPID",
+      "to_input": "u_s"
+    },
+    {
+      "from_block": "TZon",
+      "from_output": "",
+      "to_block": "coolingPID",
+      "to_input": "u_m"
+    },
+    {
+      "from_block": "TZonSet",
+      "from_output": "",
+      "to_block": "heatingPID",
+      "to_input": "u_s"
+    },
+    {
+      "from_block": "TZon",
+      "from_output": "",
+      "to_block": "heatingPID",
+      "to_input": "u_m"
+    },
+    {
+      "from_block": "coolingPID",
+      "from_output": "y",
+      "to_block": "airflowCalculator",
+      "to_input": "u"
+    },
+    {
+      "from_block": "airflowCalculator",
+      "from_output": "y",
+      "to_block": "VDis_flow",
+      "to_input": ""
+    },
+    {
+      "from_block": "heatingPID",
+      "from_output": "y",
+      "to_block": "yVal",
+      "to_input": ""
+    }
+  ],
+  "equations": []
+}

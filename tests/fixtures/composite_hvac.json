@@ -1,0 +1,148 @@
+{
+  "name": "PIController",
+  "description": "Composite PI controller for HVAC",
+  "block_type": "composite",
+  "parameters": [
+    {
+      "name": "k",
+      "type": "Real",
+      "description": "Proportional gain",
+      "value": 1.0
+    },
+    {
+      "name": "Ti",
+      "type": "Real",
+      "description": "Integrator time constant",
+      "value": 1.0,
+      "unit": "s"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "u_s",
+      "type": "Real",
+      "description": "Setpoint",
+      "unit": "K"
+    },
+    {
+      "name": "u_m",
+      "type": "Real",
+      "description": "Measured value",
+      "unit": "K"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "y",
+      "type": "Real",
+      "description": "Control signal",
+      "unit": "1"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "error_calc",
+      "block_type": "elementary",
+      "inputs": [
+        {"name": "setpoint", "type": "Real"},
+        {"name": "measured", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "error", "type": "Real"}
+      ],
+      "equations": [
+        {"lhs": "error", "rhs": "setpoint - measured"}
+      ]
+    },
+    {
+      "name": "gain",
+      "block_type": "elementary",
+      "parameters": [
+        {"name": "k", "type": "Real", "value": 1.0}
+      ],
+      "inputs": [
+        {"name": "u", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "equations": [
+        {"lhs": "y", "rhs": "k * u"}
+      ]
+    },
+    {
+      "name": "integrator",
+      "block_type": "elementary",
+      "parameters": [
+        {"name": "k", "type": "Real", "value": 1.0}
+      ],
+      "inputs": [
+        {"name": "u", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "equations": [
+        {"lhs": "y", "rhs": "k * u"}
+      ]
+    },
+    {
+      "name": "sum_block",
+      "block_type": "elementary",
+      "inputs": [
+        {"name": "u1", "type": "Real"},
+        {"name": "u2", "type": "Real"}
+      ],
+      "outputs": [
+        {"name": "y", "type": "Real"}
+      ],
+      "equations": [
+        {"lhs": "y", "rhs": "u1 + u2"}
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from_block": "u_s",
+      "from_output": "",
+      "to_block": "error_calc",
+      "to_input": "setpoint"
+    },
+    {
+      "from_block": "u_m",
+      "from_output": "",
+      "to_block": "error_calc",
+      "to_input": "measured"
+    },
+    {
+      "from_block": "error_calc",
+      "from_output": "error",
+      "to_block": "gain",
+      "to_input": "u"
+    },
+    {
+      "from_block": "error_calc",
+      "from_output": "error",
+      "to_block": "integrator",
+      "to_input": "u"
+    },
+    {
+      "from_block": "gain",
+      "from_output": "y",
+      "to_block": "sum_block",
+      "to_input": "u1"
+    },
+    {
+      "from_block": "integrator",
+      "from_output": "y",
+      "to_block": "sum_block",
+      "to_input": "u2"
+    },
+    {
+      "from_block": "sum_block",
+      "from_output": "y",
+      "to_block": "y",
+      "to_input": ""
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "InvalidTypeMismatch",
+  "description": "Invalid block with type mismatch",
+  "block_type": "elementary",
+  "inputs": [
+    {
+      "name": "u",
+      "type": "Boolean"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "y",
+      "type": "Real"
+    }
+  ],
+  "equations": [
+    {
+      "lhs": "y",
+      "rhs": "u"
+    }
+  ]
+}

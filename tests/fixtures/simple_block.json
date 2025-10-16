@@ -1,0 +1,36 @@
+{
+  "name": "SimpleController",
+  "description": "A simple proportional controller block",
+  "block_type": "composite",
+  "parameters": [
+    {
+      "name": "k",
+      "type": "Real",
+      "description": "Proportional gain",
+      "value": 1.0,
+      "unit": "1"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "u",
+      "type": "Real",
+      "description": "Control error input",
+      "unit": "K"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "y",
+      "type": "Real",
+      "description": "Control output",
+      "unit": "1"
+    }
+  ],
+  "equations": [
+    {
+      "lhs": "y",
+      "rhs": "k * u"
+    }
+  ]
+}
