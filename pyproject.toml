@@ -24,8 +24,11 @@ dev = [
     "ipykernel>=7.0.1",
     "matplotlib>=3.10.7",
     "numpy>=2.3.4",
+    "pandas>=2.2.0",
+    "pint>=0.24.0",
     "pyrefly>=0.37.0",
     "pytest>=8.4.2",
     "pytest-cov>=6.0.0",
     "ruff>=0.14.0",
+    "scipy>=1.14.0",
 ]

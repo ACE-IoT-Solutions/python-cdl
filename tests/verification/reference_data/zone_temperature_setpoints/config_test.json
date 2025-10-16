@@ -1,0 +1,25 @@
+{
+  "test_name": "zone_temperature_setpoints",
+  "description": "Validation of zone temperature setpoint control",
+  "tolerance": {
+    "absolute": 2.0,
+    "relative": 0.01
+  },
+  "simulation": {
+    "start_time": 0.0,
+    "end_time": 86400.0,
+    "time_step": 300.0
+  },
+  "variables": [
+    {
+      "name": "TSetCoo",
+      "description": "Cooling setpoint temperature",
+      "unit": "K"
+    },
+    {
+      "name": "TSetHea",
+      "description": "Heating setpoint temperature",
+      "unit": "K"
+    }
+  ]
+}
