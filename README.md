@@ -16,6 +16,7 @@ Python CDL provides a complete framework for modeling, simulating, and verifying
 - **Runtime Execution** - Fast block executor with topological sorting and nested event handling
 - **Validation** - Comprehensive block structure and connection graph validation
 - **JSON Import/Export** - Standards-compliant CDL-JSON parsing with round-trip support
+- **Block Visualization** - Publication-quality diagrams with Matplotlib and Graphviz backends
 
 ### 🧪 Verification & Testing
 - **OBC Verification Framework** - OpenBuildingControl specification compliance testing
@@ -156,9 +157,47 @@ print(f"Pass rate: {comparison.pass_rate:.1%}")
 print(f"MAE: {comparison.mean_absolute_error:.3f}")
 ```
 
+### Block Visualization
+
+```python
+from python_cdl.visualization import BlockVisualizer, VisualizationStyle
+
+# Create visualizer
+viz = BlockVisualizer(style=VisualizationStyle.DETAILED)
+
+# Render block to matplotlib figure
+fig = viz.render(controller)
+fig.show()
+
+# Save to file
+viz.render(controller, output_file="controller_diagram.png")
+
+# Customize appearance
+viz = BlockVisualizer(
+    style=VisualizationStyle.SIMPLE,
+    show_parameters=False,
+    show_types=True
+)
+```
+
 ## 📚 Interactive Tutorials
 
-### 1. Composite Block Execution
+### 1. Block Visualization
+
+**Location**: `examples/block_visualization.ipynb`
+
+Create beautiful, publication-quality diagrams of CDL blocks:
+- Visualize elementary and composite blocks
+- Customize styles, colors, and detail levels
+- Export to PNG, PDF, SVG formats
+- Multiple rendering backends (Matplotlib, Graphviz)
+- Perfect for documentation and presentations
+
+```bash
+jupyter notebook examples/block_visualization.ipynb
+```
+
+### 2. Composite Block Execution
 
 **Location**: `examples/composite_block_execution.ipynb`
 
@@ -173,7 +212,7 @@ Learn how to execute composite blocks with automatic dependency resolution:
 jupyter notebook examples/composite_block_execution.ipynb
 ```
 
-### 2. Programmatic Composition
+### 3. Programmatic Composition
 
 **Location**: `examples/programmatic_composition/tutorial.ipynb`
 
@@ -189,7 +228,7 @@ cd examples/programmatic_composition
 jupyter notebook tutorial.ipynb
 ```
 
-### 3. VAV Reheat System
+### 4. VAV Reheat System
 
 **Location**: `examples/vav_reheat/tutorial.ipynb`
 
@@ -288,11 +327,16 @@ python-cdl/
 │   ├── runtime/             # Execution engine
 │   │   ├── context.py       # Event-based execution context
 │   │   └── executor.py      # Block executor with topological sort
+│   ├── visualization/       # NEW: Block visualization
+│   │   ├── block_visualizer.py    # Main visualization API
+│   │   ├── matplotlib_renderer.py # Matplotlib backend
+│   │   └── graphviz_renderer.py   # Graphviz backend (optional)
 │   └── validators/          # Validation framework
 │       ├── block_validator.py
 │       └── graph_validator.py
 ├── examples/
-│   ├── composite_block_execution.ipynb  # NEW: Composite block tutorial
+│   ├── block_visualization.ipynb        # NEW: Visualization tutorial
+│   ├── composite_block_execution.ipynb  # Composite block tutorial
 │   ├── programmatic_composition/        # Build systems in Python
 │   ├── vav_reheat/                      # ASHRAE G36 implementation
 │   ├── p_controller_limiter.json        # Composite block example
@@ -483,20 +527,21 @@ For questions, issues, or feature requests, please open an issue on GitHub.
 - ✅ Core CDL implementation with Pydantic models
 - ✅ Elementary and composite block execution
 - ✅ Topological sorting for dependency resolution
+- ✅ Block visualization (Matplotlib + Graphviz)
 - ✅ OBC verification framework
 - ✅ Unit conversion system (Pint)
 - ✅ Time-series comparison and validation
 - ✅ VAV reheat example (ASHRAE G36)
-- ✅ Interactive Jupyter notebooks
-- ✅ Comprehensive test suite (181 tests)
+- ✅ Interactive Jupyter notebooks (4 tutorials)
+- ✅ Comprehensive test suite (188 tests)
 - ✅ JSON import/export
 
 ### 🔄 In Progress (v0.2.0)
 - 🔄 Additional HVAC examples (chilled beams, radiant systems)
 - 🔄 MOS file parser for Modelica results
-- 🔄 Enhanced visualization tools
 - 🔄 Performance optimization
 - 🔄 Documentation website
+- 🔄 Graphviz integration for advanced layouts
 
 ### 📋 Planned (v0.3.0)
 - 📋 Real-time execution mode
@@ -516,4 +561,4 @@ For questions, issues, or feature requests, please open an issue on GitHub.
 **Status**: Active Development
 **Version**: 0.1.0
 **Last Updated**: October 2025
-**Test Status**: ✅ 181/181 passing (100%)
+**Test Status**: ✅ 188/188 passing (100%)
